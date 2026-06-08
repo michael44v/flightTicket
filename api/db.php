@@ -8,10 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$host = '127.0.0.1';
-$db   = 'skybridge';
-$user = 'root';
-$pass = '';
+$host = 'localhost';
+$db   = 'ktkdvcdj_flight';
+$user = 'ktkdvcdj_root';
+$pass = 'victor47009A?';
 
 // Create connection
 $conn = new mysqli($host, $user, $pass);
