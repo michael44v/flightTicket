@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { format, isAfter, addDays } from 'date-fns';
 
