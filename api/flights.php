@@ -10,13 +10,12 @@ if (!$origin || !$destination || !$date || !$cabin) {
     sendResponse(false, null, "Missing required parameters");
 }
 
-try {
-    $sql = "SELECT * FROM flights WHERE origin = ? AND destination = ? AND DATE(departure_time) = ? AND cabin_class = ? ORDER BY price ASC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$origin, $destination, $date, $cabin]);
-    $flights = $stmt->fetchAll();
+$sql = "SELECT * FROM flights WHERE origin = ? AND destination = ? AND DATE(departure_time) = ? AND cabin_class = ? ORDER BY price ASC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ssss", $origin, $destination, $date, $cabin);
+$stmt->execute();
+$result = $stmt->get_result();
+$flights = $result->fetch_all(MYSQLI_ASSOC);
 
-    sendResponse(true, $flights);
-} catch (PDOException $e) {
-    sendResponse(false, null, $e->getMessage());
-}
+sendResponse(true, $flights);
+?>
