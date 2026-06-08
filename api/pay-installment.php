@@ -8,13 +8,14 @@ if (!$installment_id) {
     sendResponse(false, null, "Missing installment ID");
 }
 
-try {
-    $pdo->beginTransaction();
+$conn->begin_transaction();
 
+try {
     // 1. Get installment details
-    $stmt = $pdo->prepare("SELECT * FROM installment_plans WHERE id = ?");
-    $stmt->execute([$installment_id]);
-    $installment = $stmt->fetch();
+    $stmt = $conn->prepare("SELECT * FROM installment_plans WHERE id = ?");
+    $stmt->bind_param("i", $installment_id);
+    $stmt->execute();
+    $installment = $stmt->get_result()->fetch_assoc();
 
     if (!$installment) {
         throw new Exception("Installment not found");
@@ -32,35 +33,41 @@ try {
 
     if ($now > $due_date && $interval->days > 7) {
         // Get remaining balance for the booking
-        $stmt = $pdo->prepare("SELECT SUM(amount) as remaining FROM installment_plans WHERE booking_id = ? AND paid_at IS NULL");
-        $stmt->execute([$installment['booking_id']]);
-        $res = $stmt->fetch();
+        $stmt = $conn->prepare("SELECT SUM(amount) as remaining FROM installment_plans WHERE booking_id = ? AND paid_at IS NULL");
+        $stmt->bind_param("i", $installment['booking_id']);
+        $stmt->execute();
+        $res = $stmt->get_result()->fetch_assoc();
         $remaining_balance = $res['remaining'];
 
         $penalty = round($remaining_balance * 0.08, 2);
     }
 
     // 3. Update installment
-    $stmt = $pdo->prepare("UPDATE installment_plans SET paid_at = NOW(), penalty = ? WHERE id = ?");
-    $stmt->execute([$penalty, $installment_id]);
+    $stmt = $conn->prepare("UPDATE installment_plans SET paid_at = NOW(), penalty = ? WHERE id = ?");
+    $stmt->bind_param("di", $penalty, $installment_id);
+    $stmt->execute();
 
     // 4. Update booking penalty_applied and next_due_date
-    $stmt = $pdo->prepare("UPDATE bookings SET penalty_applied = penalty_applied + ? WHERE id = ?");
-    $stmt->execute([$penalty, $installment['booking_id']]);
+    $stmt = $conn->prepare("UPDATE bookings SET penalty_applied = penalty_applied + ? WHERE id = ?");
+    $stmt->bind_param("di", $penalty, $installment['booking_id']);
+    $stmt->execute();
 
     // Update next due date
-    $stmt = $pdo->prepare("SELECT due_date FROM installment_plans WHERE booking_id = ? AND paid_at IS NULL ORDER BY installment_no ASC LIMIT 1");
-    $stmt->execute([$installment['booking_id']]);
-    $next = $stmt->fetch();
+    $stmt = $conn->prepare("SELECT due_date FROM installment_plans WHERE booking_id = ? AND paid_at IS NULL ORDER BY installment_no ASC LIMIT 1");
+    $stmt->bind_param("i", $installment['booking_id']);
+    $stmt->execute();
+    $next = $stmt->get_result()->fetch_assoc();
     $next_due_date = $next ? $next['due_date'] : null;
 
-    $stmt = $pdo->prepare("UPDATE bookings SET next_due_date = ? WHERE id = ?");
-    $stmt->execute([$next_due_date, $installment['booking_id']]);
+    $stmt = $conn->prepare("UPDATE bookings SET next_due_date = ? WHERE id = ?");
+    $stmt->bind_param("si", $next_due_date, $installment['booking_id']);
+    $stmt->execute();
 
-    $pdo->commit();
+    $conn->commit();
     sendResponse(true, ['penalty_applied' => $penalty]);
 
 } catch (Exception $e) {
-    $pdo->rollBack();
+    $conn->rollback();
     sendResponse(false, null, $e->getMessage());
 }
+?>

@@ -12,27 +12,21 @@ $host = '127.0.0.1';
 $db   = 'skybridge';
 $user = 'root';
 $pass = '';
-$charset = 'utf8mb4';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+// Create connection
+$conn = new mysqli($host, $user, $pass);
 
-try {
-     $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-     // For initial setup, we might need to connect without db name to create it
-     try {
-         $pdo = new PDO("mysql:host=$host;charset=$charset", $user, $pass, $options);
-         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-         $pdo->exec("USE `$db`");
-     } catch (\PDOException $e2) {
-         echo json_encode(['success' => false, 'error' => "Connection failed: " . $e2->getMessage()]);
-         exit;
-     }
+// Check connection
+if ($conn->connect_error) {
+    sendResponse(false, null, "Connection failed: " . $conn->connect_error);
+}
+
+// Create database if not exists
+$sql = "CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+if ($conn->query($sql) === TRUE) {
+    $conn->select_db($db);
+} else {
+    sendResponse(false, null, "Error creating database: " . $conn->error);
 }
 
 function sendResponse($success, $data = null, $error = null) {
@@ -43,3 +37,4 @@ function sendResponse($success, $data = null, $error = null) {
     ]);
     exit;
 }
+?>
