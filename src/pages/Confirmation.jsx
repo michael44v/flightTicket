@@ -1,6 +1,5 @@
-import React from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Ticket, Calendar } from 'lucide-react';
+import { CheckCircle, Ticket, Calendar } from 'lucide-react';
 
 const Confirmation = () => {
   const [searchParams] = useSearchParams();
