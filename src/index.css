@@ -1,18 +1,17 @@
-@import "tailwindcss";
-
-@theme {
-  --color-sky-navy: #0a1628;
-  --color-sky-red: #e81932;
-  --font-inter: "Inter", system-ui, sans-serif;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  color: #0a1628;
 }
 
-@layer base {
-  body {
-    @apply bg-gray-50 text-sky-navy font-inter;
-  }
+h1, h2, h3, h4, h5, h6 {
+  color: #0a1628;
+  font-weight: 900;
+  letter-spacing: -0.025em;
 }
 
-/* Custom Utilities if needed */
-.fids-row {
-  @apply transition-all duration-300 hover:bg-white/5;
+.sky-gradient {
+  background: linear-gradient(135deg, #0a1628 0%, #1a2a44 100%);
 }
