@@ -60,12 +60,18 @@ const Board = () => {
               </thead>
               <tbody className="divide-y divide-white/5 font-mono">
                 {loading ? (
-                   <tr><td colSpan="5" className="p-20 text-center animate-pulse">SYNCHRONIZING DATA...</td></tr>
+                   <tr><td colSpan="6" className="p-20 text-center animate-pulse">SYNCHRONIZING DATA...</td></tr>
                 ) : logs.map((log) => (
                   <tr key={log.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-sky-red">{log.flight_number}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{log.route}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{format(new Date(log.scheduled_time), 'HH:mm')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div>{log.route}</div>
+                      <div className="text-[10px] text-gray-500 uppercase">{log.airplane_name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      <div>{format(new Date(log.scheduled_time), 'MMM dd')}</div>
+                      <div className="font-bold text-white">{format(new Date(log.scheduled_time), 'HH:mm')}</div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusPill status={log.status} />
                     </td>

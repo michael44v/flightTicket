@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS flights (
     cabin_class ENUM('Economy', 'Business', 'First') NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     stops INT DEFAULT 0,
+    airplane_name VARCHAR(50) DEFAULT 'Airbus A330',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS flight_logs (
     status ENUM('On Time', 'Delayed', 'Landed', 'Boarding') NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     type ENUM('Arrival', 'Departure') NOT NULL,
+    airplane_name VARCHAR(50) DEFAULT 'Airbus A330',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

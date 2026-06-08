@@ -16,7 +16,7 @@ const FlightCard = ({ flight, onSelect }) => {
             </div>
             <div>
               <p className="font-bold text-lg text-sky-navy">{flight.flight_number}</p>
-              <p className="text-xs text-gray-500 uppercase tracking-widest">Turkish Airlines</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest">Turkish Airlines • {flight.airplane_name}</p>
             </div>
           </div>
           <div className="text-right">
