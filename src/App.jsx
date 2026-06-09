@@ -6,6 +6,7 @@ import Book from './pages/Book';
 import Confirmation from './pages/Confirmation';
 import Board from './pages/Board';
 import Ticket from './pages/Ticket';
+import Help from './pages/Help';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/board" element={<Board />} />
             <Route path="/ticket" element={<Ticket />} />
+            <Route path="/help" element={<Help />} />
           </Routes>
         </main>
         <footer className="bg-sky-navy text-white py-8 border-t border-white/5">

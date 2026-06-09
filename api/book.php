@@ -27,7 +27,11 @@ try {
     if (!$flight) {
         throw new Exception("Flight not found");
     }
-    $total_price = $flight['price'];
+
+    // Ensure flight price is $1400 up and add site service fee (Safety check)
+    $base_price = (float)$flight['price'];
+    $site_service_fee = 150.00;
+    $total_price = max(1400.00, $base_price + $site_service_fee);
 
     // 2. Create passenger
     $stmt = $conn->prepare("INSERT INTO passengers (name, email, passport_no, nationality) VALUES (?, ?, ?, ?)");

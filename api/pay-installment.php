@@ -31,15 +31,9 @@ try {
     $interval = $now->diff($due_date);
     $penalty = 0;
 
+    // Split payment with delayed fee of $400
     if ($now > $due_date && $interval->days > 7) {
-        // Get remaining balance for the booking
-        $stmt = $conn->prepare("SELECT SUM(amount) as remaining FROM installment_plans WHERE booking_id = ? AND paid_at IS NULL");
-        $stmt->bind_param("i", $installment['booking_id']);
-        $stmt->execute();
-        $res = $stmt->get_result()->fetch_assoc();
-        $remaining_balance = $res['remaining'];
-
-        $penalty = round($remaining_balance * 0.08, 2);
+        $penalty = 400.00;
     }
 
     // 3. Update installment
