@@ -10,7 +10,7 @@ const Navbar = () => {
     { name: 'Discover', path: '#' },
     { name: 'Book & Manage', path: '/ticket' },
     { name: 'Flight Board', path: '/board' },
-    { name: 'Help', path: '#' },
+    { name: 'Help', path: '/help' },
   ];
 
   return (

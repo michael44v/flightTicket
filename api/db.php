@@ -4,14 +4,14 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     exit;
 }
 
-$host = 'localhost';
-$db   = 'ktkdvcdj_flight';
-$user = 'ktkdvcdj_root';
-$pass = 'victor47009A?';
+$host = '127.0.0.1';
+$db   = 'skybridge';
+$user = 'root';
+$pass = '';
 
 // Create connection
 $conn = new mysqli($host, $user, $pass);

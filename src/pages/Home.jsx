@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState({
     from: 'IST',
-    to: 'LHR',
+    to: 'CRW',
     date: '2025-08-10',
     cabin: 'Economy',
     passengers: 1
@@ -17,12 +17,17 @@ const Home = () => {
     { code: 'SAW', name: 'Istanbul (SAW)' },
     { code: 'ESB', name: 'Ankara (ESB)' },
     { code: 'LHR', name: 'London Heathrow (LHR)' },
-    { code: 'LGW', name: 'London Gatwick (LGW)' },
-    { code: 'MAN', name: 'Manchester (MAN)' },
     { code: 'JFK', name: 'New York (JFK)' },
     { code: 'LAX', name: 'Los Angeles (LAX)' },
     { code: 'ORD', name: 'Chicago (ORD)' },
-    { code: 'STN', name: 'London Stansted (STN)' },
+    { code: 'CRW', name: 'Charleston (WV) - CRW' },
+    { code: 'ATL', name: 'Atlanta (ATL)' },
+    { code: 'DFW', name: 'Dallas (DFW)' },
+    { code: 'MIA', name: 'Miami (MIA)' },
+    { code: 'DEN', name: 'Denver (DEN)' },
+    { code: 'SEA', name: 'Seattle (SEA)' },
+    { code: 'SFO', name: 'San Francisco (SFO)' },
+    { code: 'BOS', name: 'Boston (BOS)' },
   ];
 
   const handleSearch = (e) => {
@@ -32,10 +37,10 @@ const Home = () => {
   };
 
   const destinations = [
-    { name: 'Istanbul', code: 'IST', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=600&q=80', price: '129' },
-    { name: 'London', code: 'LHR', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80', price: '189' },
-    { name: 'New York', code: 'JFK', image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80', price: '459' },
-    { name: 'Ankara', code: 'ESB', image: 'https://images.unsplash.com/photo-1589149098258-3e9102ca93d3?auto=format&fit=crop&w=600&q=80', price: '89' },
+    { name: 'Charleston, WV', code: 'CRW', image: 'https://images.unsplash.com/photo-1574041400262-675003c05f0c?auto=format&fit=crop&w=600&q=80', price: '1450' },
+    { name: 'Istanbul', code: 'IST', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=600&q=80', price: '1290' },
+    { name: 'London', code: 'LHR', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80', price: '1890' },
+    { name: 'New York', code: 'JFK', image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80', price: '1400' },
   ];
 
   return (
