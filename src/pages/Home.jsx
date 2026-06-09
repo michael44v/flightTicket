@@ -153,7 +153,7 @@ const fmtDur = mins => `${Math.floor(mins / 60)}h ${mins % 60}m`;
 const fmtPrice = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
 // ─────────────────────────────────────────────────────────────
-// AIRPORT SELECT
+// AIRPORT SELECT  — fixed: no transparent backgrounds
 // ─────────────────────────────────────────────────────────────
 function AirportSelect({ label, value, onChange, filterOrigin }) {
   const [open, setOpen] = useState(false);
@@ -169,18 +169,30 @@ function AirportSelect({ label, value, onChange, filterOrigin }) {
 
   return (
     <div style={{ position: 'relative' }}>
-      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+      <label style={{
+        display: 'block', fontSize: 11, fontWeight: 700,
+        letterSpacing: '0.08em', textTransform: 'uppercase',
+        color: 'var(--color-text-secondary)', marginBottom: 6,
+      }}>
         <MapPin size={11} style={{ marginRight: 4, color: '#C0392B', verticalAlign: -1 }} aria-hidden />
         {label}
       </label>
+
       <button
         onClick={() => setOpen(!open)}
         style={{
-          width: '100%', background: 'var(--color-background-secondary)',
-          border: '1.5px solid var(--color-border-tertiary)', borderRadius: 14,
-          padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', gap: 8, textAlign: 'left',
-          color: 'var(--color-text-primary)',
+          width: '100%',
+          background: 'var(--color-background-secondary, #f3f4f6)',
+          border: '1.5px solid var(--color-border-tertiary, #e5e7eb)',
+          borderRadius: 14,
+          padding: '12px 16px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          textAlign: 'left',
+          color: 'var(--color-text-primary, #111)',
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -189,49 +201,118 @@ function AirportSelect({ label, value, onChange, filterOrigin }) {
             {selected ? `${selected.code} — ${selected.city}` : 'Select airport'}
           </span>
         </span>
-        <ChevronDown size={16} style={{ flexShrink: 0, color: 'var(--color-text-secondary)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+        <ChevronDown
+          size={16}
+          style={{
+            flexShrink: 0,
+            color: 'var(--color-text-secondary, #6b7280)',
+            transform: open ? 'rotate(180deg)' : 'none',
+            transition: 'transform 0.2s',
+          }}
+        />
       </button>
 
       {open && (
         <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 999,
-          background: 'var(--color-background-primary)', border: '1px solid var(--color-border-secondary)',
-          borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.14)', overflow: 'hidden',
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          /* ── FIX: always solid, never transparent ── */
+          background: 'var(--color-background-primary, #ffffff)',
+          border: '1px solid var(--color-border-secondary, #d1d5db)',
+          borderRadius: 14,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          overflow: 'hidden',
         }}>
-          <div style={{ padding: '10px 12px', borderBottom: '0.5px solid var(--color-border-tertiary)' }}>
+          {/* Search input row */}
+          <div style={{
+            padding: '10px 12px',
+            borderBottom: '0.5px solid var(--color-border-tertiary, #e5e7eb)',
+            background: 'var(--color-background-primary, #ffffff)',
+          }}>
             <input
               autoFocus
               placeholder="Search city or code…"
               value={q}
               onChange={e => setQ(e.target.value)}
-              style={{ width: '100%', fontSize: 13, background: 'transparent', border: 'none', outline: 'none', color: 'var(--color-text-primary)' }}
+              style={{
+                width: '100%',
+                fontSize: 13,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: 'var(--color-text-primary, #111)',
+              }}
             />
           </div>
-          <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+
+          {/* Options list */}
+          <div style={{
+            maxHeight: 220,
+            overflowY: 'auto',
+            background: 'var(--color-background-primary, #ffffff)',
+          }}>
             {options.map(a => (
-              <button
+              <OptionRow
                 key={a.code}
-                onClick={() => { onChange(a.code); setOpen(false); setQ(''); }}
-                style={{
-                  width: '100%', padding: '10px 16px', background: a.code === value ? 'var(--color-background-secondary)' : 'transparent',
-                  border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                <span style={{ fontSize: 16 }}>{a.flag}</span>
-                <span>
-                  <span style={{ fontWeight: 700, fontSize: 13 }}>{a.code}</span>
-                  <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginLeft: 6 }}>{a.city}, {a.country}</span>
-                </span>
-              </button>
+                airport={a}
+                selected={a.code === value}
+                onSelect={() => { onChange(a.code); setOpen(false); setQ(''); }}
+              />
             ))}
             {options.length === 0 && (
-              <p style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-secondary)', margin: 0 }}>No airports found.</p>
+              <p style={{
+                padding: '12px 16px', fontSize: 13,
+                color: 'var(--color-text-secondary, #6b7280)', margin: 0,
+                background: 'var(--color-background-primary, #ffffff)',
+              }}>
+                No airports found.
+              </p>
             )}
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+// Extracted so hover state is clean via React state
+function OptionRow({ airport, selected, onSelect }) {
+  const [hovered, setHovered] = useState(false);
+
+  const bg = selected || hovered
+    ? 'var(--color-background-secondary, #f3f4f6)'
+    : 'var(--color-background-primary, #ffffff)';
+
+  return (
+    <button
+      onClick={onSelect}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: '100%',
+        padding: '10px 16px',
+        background: bg,
+        border: 'none',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        textAlign: 'left',
+        color: 'var(--color-text-primary, #111)',
+        transition: 'background 0.12s',
+      }}
+    >
+      <span style={{ fontSize: 16 }}>{airport.flag}</span>
+      <span>
+        <span style={{ fontWeight: 700, fontSize: 13 }}>{airport.code}</span>
+        <span style={{ fontSize: 12, color: 'var(--color-text-secondary, #6b7280)', marginLeft: 6 }}>
+          {airport.city}, {airport.country}
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -245,13 +326,14 @@ function FlightCard({ flight, onBook }) {
   const cabinColor = flight.cabin === 'First' ? '#7f5af0' : flight.cabin === 'Business' ? '#2563eb' : '#16a34a';
 
   return (
-    <div style={{
-      background: 'var(--color-background-primary)',
-      border: '0.5px solid var(--color-border-tertiary)',
-      borderRadius: 16, padding: '20px 24px',
-      display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
-      transition: 'border-color 0.2s',
-    }}
+    <div
+      style={{
+        background: 'var(--color-background-primary)',
+        border: '0.5px solid var(--color-border-tertiary)',
+        borderRadius: 16, padding: '20px 24px',
+        display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
+        transition: 'border-color 0.2s',
+      }}
       onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-border-secondary)'}
       onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--color-border-tertiary)'}
     >
@@ -437,8 +519,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState(null);
 
-  const turkishOrigins = AIRPORTS.filter(a => ['IST','SAW','ESB'].includes(a.code));
-
   const handleSearch = (e) => {
     e?.preventDefault();
     setLoading(true);
@@ -458,7 +538,6 @@ const Home = () => {
         );
       });
 
-      // If exact route exists but no date match, show all on that route
       const fallback = found.length === 0
         ? ALL_FLIGHTS.filter(f => f.from === search.from && f.to === search.to && (search.cabin === 'All' || f.cabin === search.cabin))
         : found;
@@ -469,7 +548,6 @@ const Home = () => {
   };
 
   const handleBook = (flight) => {
-    setBooked(flight);
     navigate && typeof navigate === 'function'
       ? navigate(`/booking?flightId=${flight.id}&cabin=${flight.cabin}&passengers=${search.passengers}`)
       : setBooked(flight);
@@ -496,7 +574,8 @@ const Home = () => {
       {/* ── HERO ── */}
       <div style={{ position: 'relative', height: 580, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
         <div style={{
-          position: 'absolute', inset: 0, backgroundImage: 'url("https://i.insider.com/594418a99a7af51b008b4d71?width=700")',
+          position: 'absolute', inset: 0,
+          backgroundImage: 'url("https://i.insider.com/594418a99a7af51b008b4d71?width=700")',
           backgroundSize: 'cover', backgroundPosition: 'center',
         }}>
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,20,50,0.92) 40%, rgba(10,20,50,0.45))' }} />
@@ -557,7 +636,10 @@ const Home = () => {
               <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-secondary)', marginBottom: 6 }}>
                 <Calendar size={11} style={{ marginRight: 4, color: '#C0392B', verticalAlign: -1 }} aria-hidden /> Travel date
               </label>
-              <input type="date" value={search.date} onChange={e => setSearch({ ...search, date: e.target.value })}
+              <input
+                type="date"
+                value={search.date}
+                onChange={e => setSearch({ ...search, date: e.target.value })}
                 style={{ width: '100%', background: 'var(--color-background-secondary)', border: '1.5px solid var(--color-border-tertiary)', borderRadius: 14, padding: '12px 14px', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', outline: 'none', boxSizing: 'border-box' }}
               />
             </div>
@@ -566,14 +648,17 @@ const Home = () => {
               <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-secondary)', marginBottom: 6 }}>
                 <Users size={11} style={{ marginRight: 4, color: '#C0392B', verticalAlign: -1 }} aria-hidden /> Cabin
               </label>
-              <select value={search.cabin} onChange={e => setSearch({ ...search, cabin: e.target.value })}
+              <select
+                value={search.cabin}
+                onChange={e => setSearch({ ...search, cabin: e.target.value })}
                 style={{ width: '100%', background: 'var(--color-background-secondary)', border: '1.5px solid var(--color-border-tertiary)', borderRadius: 14, padding: '12px 14px', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', outline: 'none', appearance: 'none', boxSizing: 'border-box' }}
               >
                 {CABINS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
-            <button type="submit"
+            <button
+              type="submit"
               style={{ height: 52, background: '#C0392B', color: '#fff', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(192,57,43,0.35)' }}
             >
               <Search size={20} /> Find Flights
@@ -610,12 +695,13 @@ const Home = () => {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 32 }}>
               {[
-                { icon: Plane, name: 'Flight status', desc: 'Track your flight in real-time' },
-                { icon: CheckCircle, name: 'Online check-in', desc: 'Skip the airport queue' },
-                { icon: CreditCard, name: 'Manage booking', desc: 'Change or upgrade anytime' },
+                { icon: Plane,       name: 'Flight status',    desc: 'Track your flight in real-time' },
+                { icon: CheckCircle, name: 'Online check-in',  desc: 'Skip the airport queue' },
+                { icon: CreditCard,  name: 'Manage booking',   desc: 'Change or upgrade anytime' },
                 { icon: ShieldCheck, name: 'Travel insurance', desc: 'Peace of mind guaranteed' },
               ].map((s, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer' }}
+                <div key={i}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer' }}
                   onMouseEnter={e => e.currentTarget.querySelector('.svc-icon').style.background = '#C0392B'}
                   onMouseLeave={e => e.currentTarget.querySelector('.svc-icon').style.background = 'var(--color-background-secondary)'}
                 >
